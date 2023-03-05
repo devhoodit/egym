@@ -28,6 +28,7 @@ class SARSA():
         self.trajectory = [] # s, a, r, s_prime => state, action, reward, state_prime (next state)
 
         self.gamma = gamma
+        self.lr = 0.1
 
     def sample_action(self, state: Sequence):
         rand = random.random()
@@ -46,7 +47,7 @@ class SARSA():
         a = tuple([a])
         a_prime = self.sample_action(s_prime)
         a_prime = tuple([a_prime])
-        self.qtable.__setitem__(s+a, self.qtable.__getitem__(s+a) + self.gamma * (r + self.qtable.__getitem__(s_prime+a_prime) - self.qtable.__getitem__(s+a)))
+        self.qtable.__setitem__(s+a, self.qtable.__getitem__(s+a) + self.lr * (r + self.gamma * self.qtable.__getitem__(s_prime+a_prime) - self.qtable.__getitem__(s+a)))
     
     def show_table(self):
         print(self.qtable)
