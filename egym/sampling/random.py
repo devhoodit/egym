@@ -9,3 +9,6 @@ class RandomPolicy(EgreedyPolicy):
 
     def current(self) -> float:
         return self.policy.current()
+    
+    def sample_action(self, values):
+        return self.policy.sample_action(values)

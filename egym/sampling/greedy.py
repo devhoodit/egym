@@ -1,8 +1,5 @@
 from egym.sampling.samplingPolicy import SamplingPolicy
 
 class GreedyPolicy(SamplingPolicy):
-    def annealing_step(self):
-        pass
-    
-    def current(self):
-        return 0
+    def sample_action(self, values):
+        raise NotImplementedError("Must implement sample_action method for SamplingPolicy")
