@@ -29,15 +29,6 @@ class SARSA():
 
         self.gamma = gamma
         self.lr = 0.1
-
-    def sample_action(self, state: Sequence):
-        rand = random.random()
-        if rand < self.sampling_policy.current():
-            return random.randint(0, self.action_size-1)
-        else:
-            actions = self.qtable.__getitem__(state)
-            action = np.argmax(actions)
-            return action
         
     def update_table(self, transition: Tuple):
         s, a, r, s_prime = transition
@@ -45,7 +36,7 @@ class SARSA():
             s = tuple([s])
             s_prime = tuple([s_prime])
         a = tuple([a])
-        a_prime = self.sample_action(s_prime)
+        a_prime = self.sampling_policy.sample_action(s_prime)
         a_prime = tuple([a_prime])
         self.qtable.__setitem__(s+a, self.qtable.__getitem__(s+a) + self.lr * (r + self.gamma * self.qtable.__getitem__(s_prime+a_prime) - self.qtable.__getitem__(s+a)))
     
