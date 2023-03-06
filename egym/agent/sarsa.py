@@ -41,6 +41,10 @@ class SARSAAgent:
     def is_valid(self):
         return True
     
+    def set_print_format(self, format: str) -> SARSAAgent:
+        self.print_format = format
+        return
+    
     def train(self, episodes: int, silent=False):
         if not self.is_valid():
             raise NotImplementedError("set all variables")
@@ -50,7 +54,8 @@ class SARSAAgent:
         for n_epi in range(episodes):
             done = False
             s, _ = self.env.reset()
-            score = 0.
+            score = 0.0
+
             while not done:
                 a = self.agent.sample_action(s)
                 s_prime, reward, terminated, truncated, _ = self.env.step(a)
@@ -76,22 +81,18 @@ class SARSAAgent:
                 pass # implement needed for plot
 
     def eval(self):
-
         state_history = []
-
-        self.agent.sampling_policy = GreedyPolicy()
         s, _ = self.env.reset()
         score = 0.
         done = False
         state_history.append((s, score))
         while not done:
-            a = self.agent.sample_action(s)
+            a = self.agent.eval_action(s)
             s_prime, reward, terminated, truncated, _ = self.env.step(a)
             done = terminated or truncated
             s = s_prime
             score += reward
             state_history.append((s, score))
-        
         return state_history
         
 

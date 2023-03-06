@@ -1,5 +1,6 @@
 from egym.sampling.samplingPolicy import SamplingPolicy
 from egym.sampling.egreedy import StepEgreedyPolicy
+from egym.sampling.greedy import GreedyPolicy
 
 from typing import Sequence, Tuple
 from gymnasium.spaces.discrete import Discrete
@@ -12,6 +13,7 @@ import random
 class SARSA():
     def __init__(self, observation_space, action_space: Discrete, gamma=0.1, sampling_policy: SamplingPolicy=StepEgreedyPolicy(1, 0.01, 0.01)) -> None:
         self.sampling_policy = sampling_policy
+        self.eval_policy = GreedyPolicy()
         if type(observation_space) is Discrete:
             observation_shape = (observation_space.n,)
         elif type(observation_space) is Tuple:
@@ -32,6 +34,9 @@ class SARSA():
         
     def sample_action(self, state):
         return self.sampling_policy.sample_action(self.qtable.__getitem__(state))
+    
+    def eval_action(self, state):
+        return self.eval_policy.sample_action(self.qtable.__getitem__(state))
         
     def update_table(self, transition: Tuple):
         s, a, r, s_prime = transition
