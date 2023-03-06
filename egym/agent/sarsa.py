@@ -59,7 +59,7 @@ class SARSAAgent:
                 self.agent.update_table(transition)
                 s = s_prime
                 score += reward
-            self.sampling_policy.annealing_step()
+            self.sampling_policy.step()
             reward_history.append(score)
 
             if n_epi % self.print_cycle == 0 and not silent:

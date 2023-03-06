@@ -30,13 +30,16 @@ class SARSA():
         self.gamma = gamma
         self.lr = 0.1
         
+    def sample_action(self, state):
+        return self.sampling_policy.sample_action(self.qtable.__getitem__(state))
+        
     def update_table(self, transition: Tuple):
         s, a, r, s_prime = transition
         if type(s) is int:
             s = tuple([s])
             s_prime = tuple([s_prime])
         a = tuple([a])
-        a_prime = self.sampling_policy.sample_action(self.qtable.__getitem__(s))
+        a_prime = self.sample_action(s)
         a_prime = tuple([a_prime])
         self.qtable.__setitem__(s+a, self.qtable.__getitem__(s+a) + self.lr * (r + self.gamma * self.qtable.__getitem__(s_prime+a_prime) - self.qtable.__getitem__(s+a)))
     
