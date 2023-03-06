@@ -39,7 +39,7 @@ class SARSA():
             s = tuple([s])
             s_prime = tuple([s_prime])
         a = tuple([a])
-        a_prime = self.sample_action(s)
+        a_prime = self.sample_action(s_prime)
         a_prime = tuple([a_prime])
         self.qtable.__setitem__(s+a, self.qtable.__getitem__(s+a) + self.lr * (r + self.gamma * self.qtable.__getitem__(s_prime+a_prime) - self.qtable.__getitem__(s+a)))
     
