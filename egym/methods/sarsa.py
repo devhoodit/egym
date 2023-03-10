@@ -2,7 +2,8 @@ from egym.sampling.samplingPolicy import SamplingPolicy
 from egym.sampling.egreedy import StepEgreedyPolicy
 from egym.sampling.greedy import GreedyPolicy
 
-from typing import Sequence, Tuple
+from typing import Sequence
+from gymnasium.spaces.tuple import Tuple
 from gymnasium.spaces.discrete import Discrete
 import numpy as np
 import random
@@ -22,7 +23,7 @@ class SARSA():
                 space.append(discrete.n)
             observation_shape = tuple(space)
         else:
-            raise TypeError("unknown type")
+            raise TypeError(f"unknown type {type(observation_space)}")
         if type(action_space) is not Discrete:
             raise TypeError("action space parameter only can get Discrete()")
         self.action_size = action_space.n

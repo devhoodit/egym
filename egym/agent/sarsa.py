@@ -48,7 +48,7 @@ class SARSAAgent:
     def train(self, episodes: int, silent=False):
         if not self.is_valid():
             raise NotImplementedError("set all variables")
-        self.agent = SARSA(self.observation_space, self.action_space, gamma=self.gamma, sampling_policy=self.sampling_policy)
+        self.method = SARSA(self.observation_space, self.action_space, gamma=self.gamma, sampling_policy=self.sampling_policy)
         reward_history = []
 
         for n_epi in range(episodes):
@@ -57,11 +57,11 @@ class SARSAAgent:
             score = 0.0
 
             while not done:
-                a = self.agent.sample_action(s)
+                a = self.method.sample_action(s)
                 s_prime, reward, terminated, truncated, _ = self.env.step(a)
                 done = terminated or truncated
                 transition = (s, a, reward, s_prime)
-                self.agent.update_table(transition)
+                self.method.update_table(transition)
                 s = s_prime
                 score += reward
             self.sampling_policy.step()
@@ -87,7 +87,7 @@ class SARSAAgent:
         done = False
         state_history.append((s, score))
         while not done:
-            a = self.agent.eval_action(s)
+            a = self.method.eval_action(s)
             s_prime, reward, terminated, truncated, _ = self.env.step(a)
             done = terminated or truncated
             s = s_prime
