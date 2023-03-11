@@ -12,21 +12,26 @@ def _normal_distribution(loc, scale):
     return Normal(loc=loc, scale=torch.sigmoid(scale))
 
 class REINFORCE():
-    def __init__(self, observation_space, action_space, gamma=0.99, distribution=None) -> None:
+    def __init__(self, observation_space, action_space, gamma=0.99, distribution=None, net=None) -> None:
         self.gamma = gamma
-        if not self.distribution:
+        if distribution:
+            self.distribution = distribution
+        else:
             self.distribution = _normal_distribution
-        observation_shape = observation_space.shape
+        observation_shape = observation_space.shape[0]
         if type(action_space) is Discrete:
-            self.action_space = Discrete # action space is discrete
+            self.action_space = Discrete
             action_shape = action_space.n
         elif type(action_space) is Box:
-            self.action_space = Box # action space is continuous
+            self.action_space = Box
             action_shape = 2
         else:
             raise TypeError("unknown type rror")
         
-        self.policy_net = Net(observation_shape, action_shape)
+        if net:
+            self.policy_net = net
+        else:
+            self.policy_net = Net(observation_shape, action_shape)
         self.prob_history = []
         self.reward_history = []
 
@@ -58,11 +63,11 @@ class REINFORCE():
             prob = F.softmax(output, dim=0)
             prob_distribution = Categorical(prob)
             action = prob_distribution.sample()
-            return action.item(), prob[action]
+            return action.item(), torch.log(prob[action])
         else:
             prob_distribution = self.distribution(output[0], output[1]) # output[1] can be negative, must pretreatment this
             action = prob_distribution.sample()
-            return action, prob_distribution.log_prob(action)
+            return np.array([action]), prob_distribution.log_prob(action)
     
     def train_net(self):
         self.policy_net.optim.zero_grad()
