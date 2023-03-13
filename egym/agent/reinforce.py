@@ -4,6 +4,7 @@ from gymnasium.core import Env
 import torch
 
 from egym.methods.reinforce import REINFORCE
+from egym.formatting.formatting import wrap_print_cycle
 from egym.plot.defaultplot import DefaultPlot
 
 class REINFORCEAgent():
@@ -70,17 +71,7 @@ class REINFORCEAgent():
             self.method.train_net()
 
             if n_epi % self.print_cycle == 0 and not silent:
-                print(self.print_format.format(
-                    episode=n_epi,
-                    average_reward=np.average(batch_reward_history),
-                    max_reward=max(batch_reward_history),
-                    min_reward=min(batch_reward_history),
-                    std_reword=np.std(batch_reward_history),
-                    average_iter_length=np.average(batch_iter_length_history),
-                    max_iter_length=max(batch_iter_length_history),
-                    min_iter_length=min(batch_iter_length_history),
-                    std_iter_length=np.std(batch_iter_length_history)
-                ))
+                print(wrap_print_cycle(self.print_format, n_epi, batch_reward_history, batch_iter_length_history))
                 batch_reward_history = []
                 batch_iter_length_history = []
 

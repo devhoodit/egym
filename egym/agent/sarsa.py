@@ -3,6 +3,7 @@ from egym.sampling.samplingPolicy import SamplingPolicy
 from egym.sampling.egreedy import StepEgreedyPolicy
 from egym.sampling.greedy import GreedyPolicy
 from egym.methods.sarsa import SARSA
+from egym.formatting.formatting import wrap_print_cycle
 
 from gymnasium.core import Env
 import numpy as np
@@ -49,14 +50,19 @@ class SARSAAgent:
         if not self.is_valid():
             raise NotImplementedError("set all variables")
         self.method = SARSA(self.observation_space, self.action_space, gamma=self.gamma, sampling_policy=self.sampling_policy)
+        
+        batch_reward_history = []
+        batch_iter_length_history = []
         reward_history = []
+        iter_length_history = []
 
         for n_epi in range(episodes):
             done = False
             s, _ = self.env.reset()
             score = 0.0
-
+            iter_length = 0
             while not done:
+                iter_length += 1
                 a = self.method.sample_action(s)
                 s_prime, reward, terminated, truncated, _ = self.env.step(a)
                 done = terminated or truncated
@@ -65,20 +71,18 @@ class SARSAAgent:
                 s = s_prime
                 score += reward
             self.sampling_policy.step()
-            reward_history.append(score)
+            
+            batch_reward_history.append(score)
+            batch_iter_length_history.append(score)
 
             if n_epi % self.print_cycle == 0 and not silent:
-                print(self.print_format.format(
-                    episode=n_epi,
-                    average_reward=np.average(reward_history),
-                    max_reward=max(reward_history),
-                    min_reward=min(reward_history),
-                    std_reword=np.std(reward_history)
-                ))
-                reward_history = []
+                print(wrap_print_cycle(self.print_format, n_epi, batch_reward_history, batch_iter_length_history))
+                batch_reward_history = []
+                batch_iter_length_history = []
 
             if n_epi % self.save_history_cycle == 0:
-                pass # implement needed for plot
+                reward_history.append(score)
+                iter_length_history.append(iter_length)
 
     def eval(self):
         state_history = []
