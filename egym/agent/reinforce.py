@@ -70,7 +70,7 @@ class REINFORCEAgent():
             batch_iter_length_history.append(iter_length)
             self.method.train_net()
 
-            if n_epi % self.print_cycle == 0 and not silent:
+            if n_epi % self.print_cycle == 0 and not silent and n_epi != 0:
                 print(wrap_print_cycle(self.print_format, n_epi, batch_reward_history, batch_iter_length_history))
                 batch_reward_history = []
                 batch_iter_length_history = []
