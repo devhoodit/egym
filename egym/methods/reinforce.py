@@ -55,7 +55,7 @@ class REINFORCE():
             state (np.ndarray): state
 
         Returns:
-            Tuple[int, float]: selected action, prob to select action
+            Tuple[int, float]: selected action, log prob to select action
         """
         x = torch.from_numpy(state.astype(np.float32))
         output = self.policy_net(x)

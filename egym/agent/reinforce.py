@@ -4,6 +4,7 @@ from gymnasium.core import Env
 import torch
 
 from egym.methods.reinforce import REINFORCE
+from egym.plot.defaultplot import DefaultPlot
 
 class REINFORCEAgent():
     def __init__(self, env: Env) -> None:
@@ -45,13 +46,18 @@ class REINFORCEAgent():
             raise NotImplementedError("set all variables")
         self.method = REINFORCE(self.env.observation_space, self.env.action_space, gamma=self.gamma, distribution=self.distribution)
         self.method.policy_net.train()
+        batch_reward_history = []
+        batch_iter_length_history = []
         reward_history = []
+        iter_length_history = []
 
         for n_epi in range(episode):
             done = False
             s, _ = self.env.reset()
             score = 0.0
+            iter_length = 0
             while not done:
+                iter_length += 1
                 action, prob = self.method.sample_action(s)
                 s_prime, reward, terminate, truncated, _ = self.env.step(action)
                 done = terminate or truncated
@@ -59,21 +65,28 @@ class REINFORCEAgent():
                 self.method.save_prob_history(prob)
                 s = s_prime
                 score += reward
-            reward_history.append(score)
+            batch_reward_history.append(score)
+            batch_iter_length_history.append(iter_length)
             self.method.train_net()
 
             if n_epi % self.print_cycle == 0 and not silent:
                 print(self.print_format.format(
                     episode=n_epi,
-                    average_reward=np.average(reward_history),
-                    max_reward=max(reward_history),
-                    min_reward=min(reward_history),
-                    std_reword=np.std(reward_history)
+                    average_reward=np.average(batch_reward_history),
+                    max_reward=max(batch_reward_history),
+                    min_reward=min(batch_reward_history),
+                    std_reword=np.std(batch_reward_history),
+                    average_iter_length=np.average(batch_iter_length_history),
+                    max_iter_length=max(batch_iter_length_history),
+                    min_iter_length=min(batch_iter_length_history),
+                    std_iter_length=np.std(batch_iter_length_history)
                 ))
-                reward_history = []
+                batch_reward_history = []
+                batch_iter_length_history = []
 
             if n_epi % self.save_history_cycle == 0:
-                pass # implement needed for plot
+                reward_history.append(score)
+                iter_length_history.append(iter_length)
 
     def eval(self):
         self.method.policy_net.eval()
