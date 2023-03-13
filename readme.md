@@ -21,7 +21,7 @@ agent.eval()
 ```python
 import gymnasium as gym
 import egym
-env = gym.make("CartPole-v1") # or Acrobot-v1, MountainCarContinuous-v0, MountainCar-v0, Pendulum-v1
+env = gym.make("CartPole-v1") # or Acrobot-v1, MountainCarContinuous-v0, MountainCar-v0, Pendulum-v1, LunarLander-v2
 
 agent = egym.agent.REINFORCEAgent(env)\
     .set_gamma(0.98)
